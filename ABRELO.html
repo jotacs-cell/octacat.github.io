@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta de Flores Amarillas - Para Ti Yanet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fefce8, #fed7aa, #fef3c7);
+            background-size: 200% 200%;
+            animation: gradient-shift 8s ease infinite;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #d97706, #ea580c, #d97706);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .title-flowers {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .title-flowers span {
+            font-size: 2rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .card {
+            position: relative;
+            background: linear-gradient(135deg, #ffffff, #fefce8, #fef3c7);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 2px solid #fed7aa;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 1s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .card.closed {
+            width: 320px;
+            height: 192px;
+        }
+
+        .card.open {
+            width: 384px;
+            height: 500px;
+            cursor: default;
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            border-color: #fde047;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(254, 240, 138, 0.2), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .card-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .envelope {
+            font-size: 4rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .open-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #d97706, #ea580c, #d97706);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .spinning-flowers {
+            display: flex;
+            gap: 8px;
+        }
+
+        .spinning-flowers span {
+            font-size: 2rem;
+            animation: spin-slow 4s linear infinite;
+        }
+
+        .open-content {
+            opacity: 0;
+            transform: scale(0.8);
+            animation: fade-in 1s ease-out forwards;
+            gap: 24px;
+        }
+
+        .main-flower {
+            font-size: 3rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .open-title {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #d97706, #ea580c, #d97706);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 1.125rem;
+            color: #374151;
+        }
+
+        .message p {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slide-up 0.8s ease-out forwards;
+        }
+
+        .message p:nth-child(1) { animation-delay: 0.5s; }
+        .message p:nth-child(2) { animation-delay: 1s; }
+        .message p:nth-child(3) { animation-delay: 1.5s; font-weight: 600; color: #d97706; }
+
+        .flower-row {
+            display: flex;
+            gap: 12px;
+            font-size: 2.5rem;
+        }
+
+        .flower-row span {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .close-btn {
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            transform: scale(1.05);
+        }
+
+        /* Animaciones de flores flotantes */
+        .flower-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-flower {
+            position: absolute;
+            font-size: 2.5rem;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .falling-petal {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #fbbf24;
+            opacity: 0.6;
+            animation: fall 6s linear infinite;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #fde047;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        /* Keyframes */
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+            40%, 43% { transform: translateY(-10px); }
+            70% { transform: translateY(-5px); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fade-in {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slide-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; }
+            .card.closed { width: 280px; height: 160px; }
+            .card.open { width: 320px; height: 450px; }
+            .open-text { font-size: 1.25rem; }
+            .open-title { font-size: 1.5rem; }
+            .message { font-size: 1rem; }
+        }
+        /* Estrellitas */
+.star {
+  position: absolute;
+  font-size: 0.8rem;
+  color: #fff;
+  opacity: 0.8;
+  animation: twinkle 1.5s infinite alternate, fall-star 6s linear infinite;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fall-star {
+  0% { transform: translateY(-5vh) scale(1); }
+  100% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+}
+/* Rosas explosivas */
+.rose {
+  position: absolute;
+  font-size: 2rem;
+  pointer-events: none;
+  animation: explode 1.5s ease-out forwards;
+}
+
+@keyframes explode {
+  0% { transform: scale(0.5) translate(0,0); opacity: 1; }
+  100% { 
+    transform: scale(1.2) 
+               translate(calc(var(--dx) * 1px), calc(var(--dy) * 1px)) 
+               rotate(720deg); 
+    opacity: 0; 
+  }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Título principal -->
+        <div class="title">
+            PARA TI YANET
+            <div class="title-flowers">
+                <span style="animation-delay: 0s;">🌻</span>
+                <span style="animation-delay: 0.2s;">💛</span>
+                <span style="animation-delay: 0.4s;">🌻</span>
+            </div>
+        </div>
+
+        <!-- Carta interactiva -->
+        <div class="card closed" id="card" onclick="openCard()">
+            <!-- Animaciones de flores (se muestran cuando está abierta) -->
+            <div class="flower-animation" id="flowerAnimation" style="display: none;"></div>
+
+            <!-- Contenido de la carta cerrada -->
+            <div class="card-content" id="closedContent">
+                <div class="envelope">💌</div>
+                <div class="open-text">TOCA AQUÍ PARA ABRIR</div>
+                <div class="spinning-flowers">
+                    <span style="animation-delay: 0s;">🌻</span>
+                    <span style="animation-delay: 0.5s;">🌼</span>
+                    <span style="animation-delay: 1s;">🌻</span>
+                </div>
+            </div>
+
+            <!-- Contenido de la carta abierta -->
+            <div class="card-content open-content" id="openContent" style="display: none;">
+                <div class="main-flower">🌻</div>
+                <div class="open-title">¡Flores Amarillas!</div>
+                <div class="message">
+                    <p>💛 Un mensaje especial para ti 💛</p>
+                    <p>Las flores amarillas traen</p>
+                    <p>✨ Alegría y Buenos Deseos ✨</p>
+                </div>
+                <div class="flower-row">
+                    <span style="animation-delay: 2s;">🌻</span>
+                    <span style="animation-delay: 2.2s;">🌼</span>
+                    <span style="animation-delay: 2.4s;">🌻</span>
+                    <span style="animation-delay: 2.6s;">🌼</span>
+                </div>
+                <button class="close-btn" onclick="closeCard()">Cerrar Carta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isOpen = false;
+
+   function openCard() {
+    if (isOpen) return;
+    
+    isOpen = true;
+    const card = document.getElementById('card');
+    const closedContent = document.getElementById('closedContent');
+    const openContent = document.getElementById('openContent');
+    const flowerAnimation = document.getElementById('flowerAnimation');
+    
+    // Cambiar clases de la carta
+    card.classList.remove('closed');
+    card.classList.add('open');
+    card.onclick = null; // Remover el onclick
+    
+    // Redirigir después de abrir la carta
+    setTimeout(() => {
+        window.location.href = "flores.html"; // 👈 tu página de destino
+    }, 1000);
+}
+
+
+        function closeCard() {
+            isOpen = false;
+            const card = document.getElementById('card');
+            const closedContent = document.getElementById('closedContent');
+            const openContent = document.getElementById('openContent');
+            const flowerAnimation = document.getElementById('flowerAnimation');
+            
+            // Cambiar clases de la carta
+            card.classList.remove('open');
+            card.classList.add('closed');
+            card.onclick = openCard; // Restaurar el onclick
+            
+            // Mostrar contenido cerrado
+            openContent.style.display = 'none';
+            flowerAnimation.style.display = 'none';
+            closedContent.style.display = 'flex';
+            
+            // Limpiar animaciones
+            flowerAnimation.innerHTML = '';
+        }
+
+        function createFlowerAnimations() {
+    const container = document.getElementById('flowerAnimation');
+    container.innerHTML = ''; // Limpiar animaciones previas
+    
+    
+    // Crear flores flotantes
+    for (let i = 0; i < 12; i++) {
+        const flower = document.createElement('div');
+        flower.className = 'floating-flower';
+        flower.innerHTML = '🌻';
+        flower.style.left = Math.random() * 100 + '%';
+        flower.style.top = Math.random() * 100 + '%';
+        flower.style.animationDelay = Math.random() * 3 + 's';
+        flower.style.animationDuration = (3 + Math.random() * 2) + 's';
+        container.appendChild(flower);
+    }
+    
+    // Crear pétalos cayendo
+    for (let i = 0; i < 8; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'falling-petal';
+        petal.innerHTML = '🌼';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDelay = Math.random() * 2 + 's';
+        petal.style.animationDuration = (4 + Math.random() * 2) + 's';
+        container.appendChild(petal);
+    }
+    
+    // Crear partículas doradas
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 3 + 's';
+        container.appendChild(particle);
+    }
+
+    // 🌟 Crear estrellitas pequeñas
+    for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.innerHTML = '✦'; // o usa '★'
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 50 + '%';
+        star.style.fontSize = (0.5 + Math.random() * 1) + 'rem';
+        star.style.animationDelay = Math.random() * 4 + 's';
+        container.appendChild(star);
+    }
+}
+        // Agregar efectos de sonido (opcional)
+        function playSound() {
+            // Aquí podrías agregar un sonido si tienes un archivo de audio
+            // const audio = new Audio('path/to/sound.mp3');
+            // audio.play();
+        }
+        
+    </script>
+</body>
+</html>
